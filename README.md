@@ -33,6 +33,12 @@ EuphoScan is an AI tool that uses deep learning to classify types of skin lesion
    - `03_model_training.ipynb`
    - `04_evaluation.ipynb`
 
+### How to use dataset
+
+1. Download dataset from Kaggle
+2. Extract into `/data` folder
+3. Run `app.py`
+
 ## How to use the trained model
 - The trained Keras model is saved as `model/euphoscan_model.h5`.
 - The TensorFlow Lite version is `model/euphoscan_model.tflite`.

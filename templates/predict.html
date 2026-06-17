@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Euphoscan - Upload & Predict</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Miedinger';
+      src: url('/fonts/Miedinger-Regular.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --primary: #0077cc;
+      --primary-dark: #005fa3;
+      --secondary: #e8f4fc;
+      --accent: #00C9A7;
+      --text: #1a2332;
+      --light-text: #5a6a7a;
+      --white: #ffffff;
+      --border: #e2eaf2;
+      --bg: #f0f6ff;
+      --hero-bg: #0B1F3A;
+      --feature-text: #e8f4fc;
+      --card-bg: #ffffff;
+      --nav-bg: rgba(255,255,255,0.97);
+      --shadow: 0 4px 24px rgba(0,60,120,0.10);
+      --shadow-lg: 0 12px 40px rgba(0,60,120,0.16);
+      --radius: 14px;
+      --gradient: linear-gradient(135deg, #0B1F3A 0%, #134074 60%, #1a5fa8 100%);
+    }
+
+    body.dark-mode {
+      --text: #e8f0fe;
+      --light-text: #94afc8;
+      --white: #0f1f33;
+      --bg: #07111e;
+      --card-bg: #0f1f33;
+      --nav-bg: rgba(10,20,35,0.97);
+      --border: #1e3050;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+      background-color: var(--bg);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 var(--border), var(--shadow);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10000;
+      transition: background 0.3s;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      position: relative;
+    }
+
+    .logo {
+      font-family: 'Miedinger', 'Inter', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #0B1F3A;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo::before {
+      content: '';
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,201,167,0.2);
+    }
+    body.dark-mode .logo { color: #e8f0fe; }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      align-items: center;
+      gap: 6px;
+      transition: max-height 0.3s ease;
+    }
+
+    .nav-links li { margin-left: 4px; }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 15px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-links a:hover { background: var(--bg); color: var(--primary); }
+
+    .cta-button {
+      background: linear-gradient(135deg, #0B1F3A, #134074);
+      color: #fff !important;
+      padding: 10px 22px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(11,31,58,0.25);
+    }
+
+    .cta-button:hover {
+      background: linear-gradient(135deg, #134074, #1a5fa8) !important;
+      box-shadow: 0 4px 16px rgba(11,31,58,0.35);
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      margin-left: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text);
+      transition: all 0.2s;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .theme-toggle:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: space-around;
+      width: 26px; height: 22px;
+      cursor: pointer;
+      z-index: 11000;
+    }
+
+    .hamburger div {
+      width: 100%; height: 2.5px;
+      background-color: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 140px 20px 90px;
+      background: var(--gradient);
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 120%, rgba(0,201,167,0.15) 0%, transparent 60%);
+    }
+
+    .hero .container { position: relative; z-index: 2; }
+
+    .hero h1 {
+      font-size: clamp(34px, 5vw, 54px);
+      font-weight: 800;
+      margin-bottom: 14px;
+      letter-spacing: -1px;
+      color: #ffffff;
+    }
+
+    .hero p {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: rgba(255,255,255,0.72);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ── UPLOAD SECTION ── */
+    .upload-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 24px;
+    }
+
+    .upload-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      padding: 52px 48px;
+      width: 100%;
+      max-width: 560px;
+      border: 1px solid var(--border);
+    }
+
+    .upload-card-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .upload-card-header h2 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .upload-card-header p { color: var(--light-text); font-size: 15px; }
+
+    /* ── DRAG-DROP ── */
+    .drag-drop {
+      border: 2px dashed rgba(0,119,204,0.35);
+      border-radius: 14px;
+      width: 100%;
+      padding: 48px 20px;
+      text-align: center;
+      transition: all 0.3s;
+      cursor: pointer;
+      background: linear-gradient(135deg, rgba(0,119,204,0.03), rgba(0,201,167,0.04));
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .drag-drop:hover {
+      background: linear-gradient(135deg, rgba(0,119,204,0.07), rgba(0,201,167,0.07));
+      border-color: var(--accent);
+      transform: scale(1.01);
+    }
+
+    .drag-drop-icon {
+      font-size: 42px;
+      margin-bottom: 14px;
+    }
+
+    .drag-drop h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .drag-drop p {
+      font-size: 13px;
+      color: var(--light-text);
+    }
+
+    .drag-drop .supported-formats {
+      display: inline-flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .format-tag {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--light-text);
+    }
+
+    .file-input { display: none; }
+
+    /* ── PREVIEW ── */
+    .preview {
+      margin-top: 20px;
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      display: none;
+      border: 1px solid var(--border);
+    }
+
+    /* ── SCAN BUTTON ── */
+    .scan-button {
+      background: linear-gradient(135deg, #00C9A7, #009688);
+      color: #fff;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(0,201,167,0.3);
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .scan-button:hover {
+      background: linear-gradient(135deg, #00ddb8, #00a896);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(0,201,167,0.4);
+    }
+
+    /* ── RESULT ── */
+    .result {
+      margin-top: 32px;
+      font-size: 18px;
+      text-align: center;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .result-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      padding: 32px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .result-card h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+
+    .result-confidence {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,201,167,0.12);
+      border: 1px solid rgba(0,201,167,0.25);
+      color: #008a74;
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    body.dark-mode .result-confidence { color: var(--accent); }
+
+    .result-table-wrapper {
+      margin-top: 20px;
+    }
+
+    .result-table-wrapper h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .result table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .result th {
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--light-text);
+    }
+
+    .result th:last-child { text-align: right; }
+
+    .result td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .result td:last-child { text-align: right; font-weight: 600; }
+
+    .result tr:last-child td { border-bottom: none; }
+
+    /* ── LOADING ── */
+    .loading {
+      display: none;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 44px; height: 44px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading p {
+      font-size: 15px;
+      color: var(--light-text);
+      font-weight: 500;
+    }
+
+    /* ── TRUST BADGES ── */
+    .trust-badges {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 0 24px 60px;
+    }
+
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--light-text);
+      box-shadow: var(--shadow);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #07111e;
+      color: rgba(255,255,255,0.8);
+      padding: 72px 0 28px;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: 1.6fr repeat(3, 1fr);
+      gap: 48px;
+      margin-bottom: 56px;
+    }
+
+    .footer-logo {
+      font-family: 'Miedinger', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .footer-about p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+    .footer-links h4 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 20px;
+    }
+
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    .copyright {
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 24px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 64px; right: 0;
+        background: var(--nav-bg);
+        height: calc(100vh - 64px);
+        width: 260px;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px 20px;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+        max-height: 0;
+        transition: max-height 0.3s ease;
+        z-index: 10500;
+        overflow: hidden;
+      }
+      .nav-links.open { max-height: 100vh; overflow-y: auto; }
+      .nav-links li { margin: 8px 0; margin-left: 0; width: 100%; }
+      .nav-links a, .cta-button, .theme-toggle { width: 100%; text-align: left; padding: 12px 16px; display: block; }
+      .hamburger { display: flex; }
+      .hamburger.open div:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+      .hamburger.open div:nth-child(2) { opacity: 0; }
+      .hamburger.open div:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+      .upload-card { padding: 32px 24px; }
+      .hero h1 { font-size: 30px; }
+      .hero p { font-size: 16px; }
+      .footer-content { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .footer-content { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a href="/" class="logo">Euphoscan</a>
+        <div class="hamburger" id="hamburger" aria-label="Toggle menu" role="button" tabindex="0">
+          <div></div><div></div><div></div>
+        </div>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/howItWorks">How It Works</a></li>
+          <li><a href="/about">About Skin Cancer</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/predict" class="cta-button">Get Started</a></li>
+          <li><button class="theme-toggle" id="theme-toggle" aria-pressed="false">🌙 Dark</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Upload & Predict</h1>
+      <p>Scan your skin image for instant AI-powered analysis. Results in under 60 seconds.</p>
+    </div>
+  </section>
+
+  <section class="upload-area">
+    <div class="upload-card">
+      <div class="upload-card-header">
+        <h2>Upload Your Skin Image</h2>
+        <p>Drag and drop or click to upload a clear photo of your skin lesion</p>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data">
+        <label class="drag-drop" for="file-input">
+          <div class="drag-drop-icon">🔬</div>
+          <h3>Drag & Drop your image here</h3>
+          <p>or click to browse files</p>
+          <div class="supported-formats">
+            <span class="format-tag">JPG</span>
+            <span class="format-tag">JPEG</span>
+            <span class="format-tag">PNG</span>
+          </div>
+        </label>
+        <input
+          type="file"
+          id="file-input"
+          name="file"
+          class="file-input"
+          accept=".jpg, .jpeg, .png"
+          onchange="previewImage(event)"
+        />
+        <img id="image-preview" class="preview" alt="Image Preview" />
+        <button type="submit" class="scan-button">
+          <span>🔍</span> Scan Now
+        </button>
+      </form>
+    </div>
+
+    {% if label %}
+    <div class="result">
+      <div class="result-card">
+        <h2>Prediction: {{ label }}</h2>
+        <div class="result-confidence">
+          ✓ Confidence: {{ confidence }}%
+        </div>
+        <div class="result-table-wrapper">
+          <h3>Confidence per Class</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Confidence (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for class_name, conf in confidence_list %}
+              <tr>
+                <td>{{ class_name }}</td>
+                <td>{{ conf | round(2) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="loading" id="loading-spinner">
+      <div class="loading-spinner"></div>
+      <p>Analyzing your image…</p>
+    </div>
+  </section>
+
+  <div class="trust-badges">
+    <div class="trust-badge">🔒 HIPAA Compliant</div>
+    <div class="trust-badge">🧠 AI-Powered</div>
+    <div class="trust-badge">⚡ &lt;60s Results</div>
+    <div class="trust-badge">🩺 Clinically Validated</div>
+    <div class="trust-badge">🔐 End-to-End Encrypted</div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-about">
+          <div class="footer-logo">Euphoscan</div>
+          <p>Empowering individuals with AI-powered skin health insights to enable early detection and better outcomes.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">News</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Skin Cancer Facts</a></li>
+            <li><a href="#">Prevention Tips</a></li>
+            <li><a href="#">Skin Health Blog</a></li>
+            <li><a href="#">Find a Dermatologist</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">HIPAA Compliance</a></li>
+            <li><a href="#">AI Disclaimer</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>© 2025 Euphoscan. All rights reserved. Not a substitute for professional medical advice.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    const themeToggle = document.getElementById('theme-toggle');
+    const fileInput = document.getElementById('file-input');
+    const imagePreview = document.getElementById('image-preview');
+    const loadingSpinner = document.getElementById('loading-spinner');
+
+    hamburger.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+      hamburger.classList.toggle('open');
+    });
+
+    hamburger.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hamburger.click(); }
+    });
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const darkModeOn = document.body.classList.contains('dark-mode');
+      themeToggle.textContent = darkModeOn ? '☀️ Light' : '🌙 Dark';
+      themeToggle.setAttribute('aria-pressed', darkModeOn);
+      if (navLinks.classList.contains('open')) {
+        navLinks.classList.remove('open');
+        hamburger.classList.remove('open');
+      }
+    });
+
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (navLinks.classList.contains('open')) {
+          navLinks.classList.remove('open');
+          hamburger.classList.remove('open');
+        }
+      });
+    });
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    const dragDropArea = document.querySelector('.drag-drop');
+    dragDropArea.addEventListener('click', () => fileInput.click());
+
+    dragDropArea.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      dragDropArea.style.borderColor = 'var(--accent)';
+      dragDropArea.style.background = 'linear-gradient(135deg, rgba(0,201,167,0.08), rgba(0,119,204,0.06))';
+    });
+
+    dragDropArea.addEventListener('dragleave', () => {
+      dragDropArea.style.borderColor = '';
+      dragDropArea.style.background = '';
+    });
+
+    dragDropArea.addEventListener('drop', (event) => {
+      event.preventDefault();
+      dragDropArea.style.borderColor = '';
+      dragDropArea.style.background = '';
+      const files = event.dataTransfer.files;
+      if (files.length) {
+        fileInput.files = files;
+        previewImage({ target: { files: files } });
+      }
+    });
+
+    document.querySelector('form').addEventListener('submit', () => {
+      loadingSpinner.style.display = 'block';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Euphoscan - About Us</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Miedinger';
+      src: url('/fonts/Miedinger-Regular.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --primary: #0077cc;
+      --primary-dark: #005fa3;
+      --secondary: #e8f4fc;
+      --accent: #00C9A7;
+      --text: #1a2332;
+      --light-text: #5a6a7a;
+      --white: #ffffff;
+      --border: #e2eaf2;
+      --bg: #f0f6ff;
+      --hero-bg: #0B1F3A;
+      --feature-text: #e8f4fc;
+      --card-bg: #ffffff;
+      --nav-bg: rgba(255,255,255,0.97);
+      --shadow: 0 4px 24px rgba(0,60,120,0.10);
+      --shadow-lg: 0 12px 40px rgba(0,60,120,0.16);
+      --radius: 14px;
+      --gradient: linear-gradient(135deg, #0B1F3A 0%, #134074 60%, #1a5fa8 100%);
+    }
+
+    body.dark-mode {
+      --text: #e8f0fe;
+      --light-text: #94afc8;
+      --white: #0f1f33;
+      --bg: #07111e;
+      --hero-bg: #040e1a;
+      --card-bg: #0f1f33;
+      --nav-bg: rgba(10,20,35,0.97);
+      --border: #1e3050;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+      background-color: var(--bg);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 var(--border), var(--shadow);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10000;
+      transition: background 0.3s;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      position: relative;
+    }
+
+    .logo {
+      font-family: 'Miedinger', 'Inter', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #0B1F3A;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo::before {
+      content: '';
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,201,167,0.2);
+    }
+    body.dark-mode .logo { color: #e8f0fe; }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      align-items: center;
+      gap: 6px;
+      transition: max-height 0.3s ease;
+    }
+
+    .nav-links li { margin-left: 4px; }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 15px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-links a:hover { background: var(--bg); color: var(--primary); }
+
+    .cta-button {
+      background: linear-gradient(135deg, #0B1F3A, #134074);
+      color: #fff !important;
+      padding: 10px 22px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(11,31,58,0.25);
+    }
+
+    .cta-button:hover {
+      background: linear-gradient(135deg, #134074, #1a5fa8) !important;
+      box-shadow: 0 4px 16px rgba(11,31,58,0.35);
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      margin-left: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text);
+      transition: all 0.2s;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .theme-toggle:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: space-around;
+      width: 26px; height: 22px;
+      cursor: pointer;
+      z-index: 11000;
+    }
+
+    .hamburger div {
+      width: 100%; height: 2.5px;
+      background-color: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 140px 0 90px;
+      background: var(--gradient);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(0,201,167,0.12) 0%, transparent 70%);
+    }
+
+    .hero .container { position: relative; z-index: 2; }
+
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 54px);
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: rgba(255,255,255,0.7);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── CARDS SECTION ── */
+    .cards-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+      padding: 80px 24px;
+    }
+
+    .card1, .card2, .card3 {
+      border-radius: var(--radius);
+      padding: 36px 30px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card1 {
+      background: linear-gradient(135deg, #134074, #1a5fa8);
+      box-shadow: 0 8px 32px rgba(19,64,116,0.35);
+    }
+    .card2 {
+      background: linear-gradient(135deg, #0B2545, #134074);
+      box-shadow: 0 8px 32px rgba(11,37,69,0.35);
+    }
+    .card3 {
+      background: linear-gradient(135deg, #0B1F3A, #0B2545);
+      box-shadow: 0 8px 32px rgba(11,31,58,0.35);
+    }
+
+    .card1::before, .card2::before, .card3::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .card1:hover, .card2:hover, .card3:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+    }
+
+    .card-icon {
+      width: 52px; height: 52px;
+      background: rgba(0,201,167,0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+      color: var(--accent);
+    }
+
+    .card1 h2, .card2 h2, .card3 h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    .card1 p, .card2 p, .card3 p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.75;
+      text-align: justify;
+    }
+
+    /* ── VALUES SECTION ── */
+    .values-section {
+      padding: 80px 24px;
+      background: var(--white);
+    }
+
+    body.dark-mode .values-section { background: var(--card-bg); }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .section-header h2 {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .section-header p { color: var(--light-text); font-size: 16px; }
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+    }
+
+    .value-item {
+      text-align: center;
+      padding: 32px 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      transition: all 0.3s;
+    }
+
+    .value-item:hover {
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(0,201,167,0.12);
+      transform: translateY(-4px);
+    }
+
+    .value-item .icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+
+    .value-item h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .value-item p { color: var(--light-text); font-size: 14px; }
+
+    /* ── CTA CENTER ── */
+    .cta-center {
+      text-align: center;
+      padding: 80px 24px;
+      background: var(--gradient);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-center::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 80% at 50% 0%, rgba(0,201,167,0.15) 0%, transparent 60%);
+    }
+
+    .cta-center h2 {
+      font-size: 36px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-center p {
+      color: rgba(255,255,255,0.7);
+      font-size: 17px;
+      margin-bottom: 36px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-center .cta-button {
+      background: linear-gradient(135deg, #00C9A7, #009688);
+      color: #fff !important;
+      padding: 16px 40px;
+      font-size: 17px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,201,167,0.35);
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-center .cta-button:hover {
+      background: linear-gradient(135deg, #00ddb8, #00a896) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,201,167,0.45);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #07111e;
+      color: rgba(255,255,255,0.8);
+      padding: 72px 0 28px;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: 1.6fr repeat(3, 1fr);
+      gap: 48px;
+      margin-bottom: 56px;
+    }
+
+    .footer-logo {
+      font-family: 'Miedinger', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .footer-about p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+    .footer-links h4 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 20px;
+    }
+
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 12px; }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    .copyright {
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 24px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 64px; right: 0;
+        background: var(--nav-bg);
+        height: calc(100vh - 64px);
+        width: 260px;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px 20px;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+        max-height: 0;
+        transition: max-height 0.3s ease;
+        z-index: 10500;
+        overflow: hidden;
+      }
+      .nav-links.open { max-height: 100vh; overflow-y: auto; }
+      .nav-links li { margin: 8px 0; margin-left: 0; width: 100%; }
+      .nav-links a, .cta-button, .theme-toggle { width: 100%; text-align: left; padding: 12px 16px; display: block; }
+      .hamburger { display: flex; }
+      .hamburger.open div:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+      .hamburger.open div:nth-child(2) { opacity: 0; }
+      .hamburger.open div:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+      .cards-section { padding: 60px 16px; }
+      .footer-content { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .footer-content { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a href="/" class="logo">Euphoscan</a>
+        <div class="menu-toggle" id="mobile-menu">
+          <div></div><div></div><div></div>
+        </div>
+        <ul class="nav-links" id="nav-links-about">
+          <li><a href="/">Home</a></li>
+          <li><a href="/howItWorks">How It Works</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/predict" class="cta-button">Get Started</a></li>
+        </ul>
+        <button class="theme-toggle" id="theme-toggle">🌙 Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>About Euphoscan</h1>
+      <p>Empowering early skin health detection with AI technology — making expert-level dermatology accessible to everyone.</p>
+    </div>
+  </section>
+
+  <section class="cards-section container">
+    <div class="card1">
+      <div class="card-icon">🎯</div>
+      <h2>Our Mission</h2>
+      <p>At Euphoscan, our mission is to provide accessible, AI-driven skin analysis for everyone. We believe that early detection is key to effective treatment, and we strive to empower individuals with the tools they need to take charge of their skin health.</p>
+    </div>
+    <div class="card2">
+      <div class="card-icon">🧠</div>
+      <h2>Our Technology</h2>
+      <p>Euphoscan utilizes advanced AI models trained on a vast dataset of dermatological images. Our technology helps detect possible skin issues quickly and accurately, providing users with reliable insights into their skin health.</p>
+    </div>
+    <div class="card3">
+      <div class="card-icon">🌱</div>
+      <h2>Our Story</h2>
+      <p>Euphoscan was created by a team of passionate health professionals and tech enthusiasts who recognized the need for accessible skin health solutions. Our journey began with a simple idea: to harness the power of AI to make skin health analysis available to everyone.</p>
+    </div>
+  </section>
+
+  <section class="values-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>What We Stand For</h2>
+        <p>The principles that guide everything we build</p>
+      </div>
+      <div class="values-grid">
+        <div class="value-item">
+          <div class="icon">🔬</div>
+          <h3>Scientific Rigor</h3>
+          <p>Every model is clinically validated and peer-reviewed before deployment.</p>
+        </div>
+        <div class="value-item">
+          <div class="icon">🔒</div>
+          <h3>Privacy First</h3>
+          <p>Your health data is yours. We never share or sell personal information.</p>
+        </div>
+        <div class="value-item">
+          <div class="icon">🌍</div>
+          <h3>Accessibility</h3>
+          <p>Quality dermatological insight shouldn't depend on your zip code.</p>
+        </div>
+        <div class="value-item">
+          <div class="icon">💡</div>
+          <h3>Transparency</h3>
+          <p>We explain our AI's reasoning in language anyone can understand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-center">
+    <h2>Ready to take control of your skin health?</h2>
+    <p>Join thousands of users who trust Euphoscan for early detection.</p>
+    <a href="/predict" class="cta-button">Try Euphoscan Today</a>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-about">
+          <div class="footer-logo">Euphoscan</div>
+          <p>Empowering individuals with AI-powered skin health insights to enable early detection and better outcomes.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">News</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Skin Cancer Facts</a></li>
+            <li><a href="#">Prevention Tips</a></li>
+            <li><a href="#">Skin Health Blog</a></li>
+            <li><a href="#">Find a Dermatologist</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">HIPAA Compliance</a></li>
+            <li><a href="#">AI Disclaimer</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>© 2025 Euphoscan. All rights reserved. Not a substitute for professional medical advice.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const mobileMenu = document.getElementById('mobile-menu');
+    const navLinks = document.getElementById('nav-links-about');
+    const themeToggle = document.getElementById('theme-toggle');
+
+    mobileMenu.addEventListener('click', () => { navLinks.classList.toggle('active'); });
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const on = document.body.classList.contains('dark-mode');
+      themeToggle.textContent = on ? '☀️ Light' : '🌙 Dark';
+    });
+  </script>
+</body>
+</html>

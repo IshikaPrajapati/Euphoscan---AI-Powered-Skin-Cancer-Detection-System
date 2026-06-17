@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Euphoscan | AI-Powered Skin Cancer Prediction</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Miedinger';
+      src: url('/fonts/Miedinger-Regular.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --primary: #0077cc;
+      --primary-dark: #005fa3;
+      --secondary: #e8f4fc;
+      --accent: #00C9A7;
+      --accent2: #4FC3F7;
+      --text: #1a2332;
+      --light-text: #5a6a7a;
+      --white: #ffffff;
+      --border: #e2eaf2;
+      --bg: #f0f6ff;
+      --hero-bg: #0B1F3A;
+      --feature-text: #e8f4fc;
+      --card-bg: #ffffff;
+      --nav-bg: rgba(255,255,255,0.97);
+      --shadow: 0 4px 24px rgba(0,60,120,0.10);
+      --shadow-lg: 0 12px 40px rgba(0,60,120,0.16);
+      --radius: 14px;
+      --gradient: linear-gradient(135deg, #0B1F3A 0%, #134074 60%, #1a5fa8 100%);
+      --teal-gradient: linear-gradient(135deg, #00C9A7, #009688);
+    }
+
+    body.dark-mode {
+      --text: #e8f0fe;
+      --light-text: #94afc8;
+      --white: #0f1f33;
+      --bg: #07111e;
+      --hero-bg: #040e1a;
+      --feature-text: #cde;
+      --card-bg: #0f1f33;
+      --nav-bg: rgba(10,20,35,0.97);
+      --border: #1e3050;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+      background-color: var(--bg);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 var(--border), var(--shadow);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10000;
+      transition: background 0.3s;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      position: relative;
+    }
+
+    .logo {
+      font-family: 'Miedinger', 'Inter', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #0B1F3A;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo::before {
+      content: '';
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,201,167,0.2);
+    }
+    body.dark-mode .logo { color: #e8f0fe; }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      align-items: center;
+      gap: 6px;
+      transition: max-height 0.3s ease;
+    }
+
+    .nav-links li { margin-left: 4px; }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 15px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-links a:hover {
+      background: var(--bg);
+      color: var(--primary);
+    }
+
+    .cta-button {
+      background: linear-gradient(135deg, #0B1F3A, #134074);
+      color: #fff !important;
+      padding: 10px 22px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(11,31,58,0.25);
+    }
+
+    .cta-button:hover {
+      background: linear-gradient(135deg, #134074, #1a5fa8) !important;
+      box-shadow: 0 4px 16px rgba(11,31,58,0.35);
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      margin-left: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text);
+      transition: all 0.2s;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: space-around;
+      width: 26px;
+      height: 22px;
+      cursor: pointer;
+      z-index: 11000;
+    }
+
+    .hamburger div {
+      width: 100%;
+      height: 2.5px;
+      background-color: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: var(--gradient);
+      overflow: hidden;
+      padding: 120px 0 80px;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 50%, rgba(79,195,247,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 20% 80%, rgba(0,201,167,0.10) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-content { text-align: left; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,201,167,0.15);
+      border: 1px solid rgba(0,201,167,0.3);
+      color: var(--accent);
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 58px);
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(90deg, #4FC3F7, #00C9A7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: rgba(255,255,255,0.78);
+      max-width: 480px;
+      margin-bottom: 40px;
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .scan-button {
+      background: linear-gradient(135deg, #00C9A7, #009688);
+      color: #fff;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(0,201,167,0.35);
+      letter-spacing: 0.2px;
+    }
+
+    .scan-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,201,167,0.45);
+      background: linear-gradient(135deg, #00ddb8, #00a896);
+    }
+
+    .hero-secondary-btn {
+      background: rgba(255,255,255,0.10);
+      border: 1.5px solid rgba(255,255,255,0.25);
+      color: #fff;
+      padding: 15px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .hero-secondary-btn:hover {
+      background: rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    .hero-visual {
+      position: relative;
+      height: 500px;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .spline-iframe {
+      position: absolute;
+      inset: 0;
+    }
+
+    .spline-iframe iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .hero-stat-item { text-align: left; }
+
+    .hero-stat-item strong {
+      display: block;
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .hero-stat-item span {
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* ── DEMO SECTION ── */
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      padding: 100px 24px;
+    }
+
+    .demo-text h2 {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .demo-text p { color: var(--light-text); font-size: 16px; margin-bottom: 20px; }
+
+    .demo-text ol {
+      margin: 20px 0 20px 20px;
+    }
+
+    .demo-text ol li {
+      margin-bottom: 12px;
+      color: var(--light-text);
+      font-size: 15px;
+      padding-left: 8px;
+    }
+
+    .demo-image {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .demo-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      background: var(--gradient);
+      padding: 100px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .features::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(0,201,167,0.08);
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .features-header h2 {
+      font-size: 40px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .features-header p { color: rgba(255,255,255,0.65); font-size: 17px; }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .feature-card1, .feature-card2, .feature-card3 {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      padding: 36px 30px;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    .feature-card1:hover, .feature-card2:hover, .feature-card3:hover {
+      background: rgba(255,255,255,0.12);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+    }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(0,201,167,0.15);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: var(--accent);
+    }
+
+    .feature-card1 h3, .feature-card2 h3, .feature-card3 h3 {
+      font-size: 19px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .feature-card1 p, .feature-card2 p, .feature-card3 p {
+      color: rgba(255,255,255,0.65);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── SPLINE SECTION ── */
+    .spline-section {
+      padding: 0 24px;
+    }
+
+    .spline-section > div {
+      width: 100%;
+      height: 500px;
+      margin: 80px 0;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* ── STATS ── */
+    .stats {
+      padding: 80px 24px;
+      text-align: center;
+    }
+
+    .stats h2 {
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .stats > p {
+      color: var(--light-text);
+      font-size: 16px;
+      margin-bottom: 56px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .stat-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 20px;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s;
+    }
+
+    .stat-item:hover { transform: translateY(-4px); }
+
+    .stat-item h3 {
+      font-size: 42px;
+      font-weight: 800;
+      color: #134074;
+      margin-bottom: 8px;
+      letter-spacing: -1px;
+    }
+
+    body.dark-mode .stat-item h3 { color: var(--accent2); }
+
+    .stat-item p {
+      color: var(--light-text) !important;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #07111e;
+      color: rgba(255,255,255,0.8);
+      padding: 72px 0 28px;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: 1.6fr repeat(3, 1fr);
+      gap: 48px;
+      margin-bottom: 56px;
+    }
+
+    .footer-logo {
+      font-family: 'Miedinger', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .footer-about p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+    .footer-links h4 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 20px;
+    }
+
+    .footer-links ul { list-style: none; }
+
+    .footer-links li { margin-bottom: 12px; }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    .copyright {
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 24px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 64px;
+        right: 0;
+        background: var(--nav-bg);
+        height: calc(100vh - 64px);
+        width: 260px;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px 20px;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+        overflow-y: auto;
+        max-height: 0;
+        transition: max-height 0.3s ease;
+        z-index: 10500;
+        overflow: hidden;
+      }
+
+      .nav-links.open { max-height: 100vh; overflow-y: auto; }
+
+      .nav-links li { margin: 8px 0; margin-left: 0; width: 100%; }
+
+      .nav-links a, .cta-button, .theme-toggle {
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        display: block;
+      }
+
+      .hamburger { display: flex; }
+
+      .hamburger.open div:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+      .hamburger.open div:nth-child(2) { opacity: 0; }
+      .hamburger.open div:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+      .hero .container { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .hero-content { text-align: center; }
+      .hero p { margin: 0 auto 32px; }
+      .hero-actions { justify-content: center; }
+      .hero-stats { justify-content: center; flex-wrap: wrap; gap: 24px; }
+
+      .demo-container { grid-template-columns: 1fr; gap: 40px; }
+
+      .features-grid { grid-template-columns: 1fr; }
+
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+
+      .footer-content { grid-template-columns: 1fr 1fr; }
+
+      .hero h1 { font-size: 34px; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .footer-content { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a href="/" class="logo">Euphoscan</a>
+        <div class="hamburger" id="hamburger" aria-label="Toggle menu" role="button" tabindex="0">
+          <div></div><div></div><div></div>
+        </div>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/howItWorks">How It Works</a></li>
+          <li><a href="/about">About Skin Cancer</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/predict" class="cta-button">Get Started</a></li>
+          <li><button class="theme-toggle" id="theme-toggle" aria-pressed="false">🌙 Dark</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <i class="fas fa-circle" style="font-size:7px;"></i> AI-Powered Dermatology
+        </div>
+        <h1>Advanced Skin Cancer <span>Prediction</span></h1>
+        <p>Euphoscan uses cutting-edge AI to analyze skin lesions with 98.7% accuracy. Get instant, reliable results from the comfort of your home.</p>
+        <div class="hero-actions">
+          <a href="/predict" class="scan-button">
+            <i class="fas fa-play-circle"></i> Get Prediction
+          </a>
+          <a href="/howItWorks" class="hero-secondary-btn">
+            <i class="fas fa-info-circle"></i> Learn How
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <strong>98.7%</strong>
+            <span>Accuracy</span>
+          </div>
+          <div class="hero-stat-item">
+            <strong>&lt;60s</strong>
+            <span>Analysis Time</span>
+          </div>
+          <div class="hero-stat-item">
+            <strong>500K+</strong>
+            <span>Scans Done</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="spline-iframe">
+          <iframe src="https://my.spline.design/cybernetichuman-0n4Zr94dvKTcdukbZFgmVdhW/" frameborder="0" width="100%" height="100%"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-container container">
+    <div class="demo-text">
+      <h2>How Euphoscan Works</h2>
+      <p>Our AI analyzes images of skin lesions using deep learning algorithms trained on millions of dermatological cases. The process is simple:</p>
+      <ol>
+        <li>Take a clear photo of the area of concern</li>
+        <li>Upload it to our secure platform</li>
+        <li>Receive instant analysis with risk assessment</li>
+        <li>Get recommendations for next steps</li>
+      </ol>
+      <p>Results are ready in 60 seconds and include detailed explanations in easy-to-understand language.</p>
+    </div>
+    <div class="demo-image">
+      <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/103b222c-1c17-43e2-a78b-e7729159510c.png" alt="Mobile interface showing step-by-step skin lesion scanning process" />
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <div class="features-header">
+        <h2>Why Choose Euphoscan</h2>
+        <p>Trusted by dermatologists and patients worldwide</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card1">
+          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3>Medical-Grade Accuracy</h3>
+          <p>Our AI matches board-certified dermatologists in sensitivity and specificity for melanoma detection.</p>
+        </div>
+        <div class="feature-card2">
+          <div class="feature-icon"><i class="fas fa-lock"></i></div>
+          <h3>HIPAA Compliant</h3>
+          <p>Your data is encrypted and protected with enterprise-grade security protocols.</p>
+        </div>
+        <div class="feature-card3">
+          <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+          <h3>Instant Results</h3>
+          <p>Get analysis in under a minute — no waiting for lab tests or appointments.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container spline-section">
+    <div>
+      <iframe src="https://my.spline.design/tropicofcancerthetropicofcapricorn-OHnf4nZ0hVsVxSG4YVoTNsAU/" frameborder="0" width="100%" height="100%" style="border:none;"></iframe>
+    </div>
+  </section>
+
+  <section class="container stats">
+    <h2>Early Detection Saves Lives</h2>
+    <p>When detected early, survival rates for melanoma exceed 99%</p>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <h3>99%</h3>
+        <p>5-year survival for early stage melanoma</p>
+      </div>
+      <div class="stat-item">
+        <h3>23%</h3>
+        <p>Increased risk with just one blistering sunburn</p>
+      </div>
+      <div class="stat-item">
+        <h3>1 in 5</h3>
+        <p>Americans will develop skin cancer by age 70</p>
+      </div>
+      <div class="stat-item">
+        <h3>98.7%</h3>
+        <p>Accuracy of Euphoscan's melanoma detection</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-about">
+          <div class="footer-logo">Euphoscan</div>
+          <p>Empowering individuals with AI-powered skin health insights to enable early detection and better outcomes.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">News</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Skin Cancer Facts</a></li>
+            <li><a href="#">Prevention Tips</a></li>
+            <li><a href="#">Skin Health Blog</a></li>
+            <li><a href="#">Find a Dermatologist</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">HIPAA Compliance</a></li>
+            <li><a href="#">AI Disclaimer</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>© 2025 Euphoscan. All rights reserved. Not a substitute for professional medical advice.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    const themeToggle = document.getElementById('theme-toggle');
+
+    hamburger.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+      hamburger.classList.toggle('open');
+    });
+
+    hamburger.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hamburger.click(); }
+    });
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const darkModeOn = document.body.classList.contains('dark-mode');
+      themeToggle.textContent = darkModeOn ? '☀️ Light' : '🌙 Dark';
+      themeToggle.setAttribute('aria-pressed', darkModeOn);
+      if (navLinks.classList.contains('open')) {
+        navLinks.classList.remove('open');
+        hamburger.classList.remove('open');
+      }
+    });
+
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (navLinks.classList.contains('open')) {
+          navLinks.classList.remove('open');
+          hamburger.classList.remove('open');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

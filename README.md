@@ -38,4 +38,4 @@ EuphoScan is an AI tool that uses deep learning to classify types of skin lesion
 This project is for educational and research purposes only. It is **not a medical tool**. Always consult qualified health professionals for any medical concerns.
 
 ## Author
-Your Name — [Your GitHub profile link]
+Ishika Prajapati(https://github.com/IshikaPrajapati)

@@ -1,0 +1,81 @@
+import tensorflow as tf
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+from tensorflow.keras.models import Model
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import pandas as pd
+import os
+
+# Paths
+DATA_DIR = 'data/images'
+METADATA_PATH = 'data/metadata.csv'
+MODEL_DIR = 'model'
+
+# Load metadata
+df = pd.read_csv(METADATA_PATH)
+df['filename'] = df['image_id'] + '.jpg'
+
+# Image data generator with validation split
+datagen = ImageDataGenerator(
+    rescale=1./255,
+    validation_split=0.2,
+    horizontal_flip=True,
+    rotation_range=20,
+    zoom_range=0.15,
+    shear_range=0.15,
+    fill_mode='nearest'
+)
+
+train_gen = datagen.flow_from_dataframe(
+    dataframe=df,
+    directory=DATA_DIR,
+    x_col='filename',
+    y_col='dx',
+    subset='training',
+    batch_size=32,
+    class_mode='categorical',
+    target_size=(224,224)
+)
+
+val_gen = datagen.flow_from_dataframe(
+    dataframe=df,
+    directory=DATA_DIR,
+    x_col='filename',
+    y_col='dx',
+    subset='validation',
+    batch_size=32,
+    class_mode='categorical',
+    target_size=(224,224)
+)
+
+# Build model (MobileNetV2 base + custom head)
+base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(224,224,3))
+base_model.trainable = False  # Freeze base
+
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(128, activation='relu')(x)
+outputs = Dense(7, activation='softmax')(x)  # 7 classes
+
+model = Model(inputs=base_model.input, outputs=outputs)
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.summary()
+
+# Train
+model.fit(train_gen, epochs=5, validation_data=val_gen)
+
+# Save Keras model
+os.makedirs(MODEL_DIR, exist_ok=True)
+keras_model_path = os.path.join(MODEL_DIR, 'euphoscan_model.h5')
+model.save(keras_model_path)
+print(f"Keras model saved at {keras_model_path}")
+
+# Convert to TensorFlow Lite
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
+
+tflite_model_path = os.path.join(MODEL_DIR, 'euphoscan_model.tflite')
+with open(tflite_model_path, 'wb') as f:
+    f.write(tflite_model)
+print(f"TFLite model saved at {tflite_model_path}")

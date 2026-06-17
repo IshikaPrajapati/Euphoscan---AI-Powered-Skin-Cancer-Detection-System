@@ -7,11 +7,15 @@ EuphoScan is an AI tool that uses deep learning to classify types of skin lesion
 ├── data/
 │ ├── images/ # Dermatoscopic images (HAM10000)
 │ ├── metadata.csv # Labels and metadata
+
+
 ├── notebooks/
 │ ├── 01_data_exploration.ipynb # Explore dataset and visualize
 │ ├── 02_preprocessing.ipynb # Image preprocessing and augmentation
 │ ├── 03_model_training.ipynb # CNN model building and training
 │ ├── 04_evaluation.ipynb # Model evaluation and analysis
+
+
 ├── model/
 │ ├── euphoscan_model.h5 # Saved Keras model
 │ ├── euphoscan_model.tflite # Converted TensorFlow Lite model

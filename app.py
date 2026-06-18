@@ -577,7 +577,26 @@ def predict():
             return f"Error processing image: {str(e)}", 500
 
     return render_template("predict.html")
+@app.route("/debug-model")
+def debug_model_route():
+    import hashlib
 
+    model_path = "model/euphoscan_model.keras"
+
+    if not os.path.exists(model_path):
+        return {"error": "Model not found"}
+
+    sha256 = hashlib.sha256()
+
+    with open(model_path, "rb") as f:
+        while chunk := f.read(8192):
+            sha256.update(chunk)
+
+    return {
+        "exists": True,
+        "size": os.path.getsize(model_path),
+        "sha256": sha256.hexdigest()
+    }
 
 # ==================================
 # Run Flask

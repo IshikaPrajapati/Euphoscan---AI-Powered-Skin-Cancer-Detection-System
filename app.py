@@ -220,11 +220,20 @@ app = Flask(__name__)
 # Load Model
 # ==================================
 
+# MODEL_PATH = "model/euphoscan_model.keras"
+
+# print("Loading model...")
+
+# model = load_model(MODEL_PATH, compile=False)
 MODEL_PATH = "model/euphoscan_model.keras"
 
-print("Loading model...")
+print("Current Directory:", os.getcwd())
+print("Model Exists:", os.path.exists(MODEL_PATH))
 
+print("Loading model...")
 model = load_model(MODEL_PATH, compile=False)
+
+print("Model loaded successfully!")
 
 print("Model loaded successfully!")
 print("Model input shape:", model.input_shape)
@@ -356,8 +365,12 @@ def predict():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
 
+    # app.run(
+    #     host="0.0.0.0",
+    #     port=port,
+    #     debug=True
+    # )
     app.run(
-        host="0.0.0.0",
-        port=port,
-        debug=True
-    )
+    host="0.0.0.0",
+    port=port
+)

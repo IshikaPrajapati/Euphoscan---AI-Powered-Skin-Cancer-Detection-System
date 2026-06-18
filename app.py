@@ -221,6 +221,21 @@ import keras
 
 print("TensorFlow:", tf.__version__)
 print("Keras:", keras.__version__)
+At this point, the most likely issue is TensorFlow/Keras version mismatch on Render, not the file itself.
+
+Let's verify exactly what Render is installing.
+
+Add this before load_model():
+
+import tensorflow as tf
+import keras
+
+print("=" * 50)
+print("TensorFlow Version:", tf.__version__)
+print("Keras Version:", keras.__version__)
+print("Model Exists:", os.path.exists(MODEL_PATH))
+print("Model Size:", os.path.getsize(MODEL_PATH))
+print("=" * 50)
 
 # ==================================
 # Load Model
@@ -236,8 +251,15 @@ MODEL_PATH = "model/euphoscan_model.keras"
 print("Current Directory:", os.getcwd())
 print("Model Exists:", os.path.exists(MODEL_PATH))
 
+# print("Loading model...")
+# model = load_model(MODEL_PATH, compile=False)
 print("Loading model...")
-model = load_model(MODEL_PATH, compile=False)
+print("Model size:", os.path.getsize(MODEL_PATH))
+
+model = load_model(
+    MODEL_PATH,
+    compile=False
+)
 
 print("Model loaded successfully!")
 

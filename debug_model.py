@@ -3,7 +3,8 @@ import zipfile
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 
-MODEL_PATH = "model/euphoscan_model.keras"
+# MODEL_PATH = "model/euphoscan_model.keras"
+MODEL_PATH = "model/euphoscan_render.keras"
 
 print("=" * 60)
 print("PYTHON:", os.sys.version)

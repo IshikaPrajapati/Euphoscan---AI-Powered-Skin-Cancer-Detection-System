@@ -424,8 +424,8 @@ app = Flask(__name__)
 # Model Path
 # ==================================
 
-MODEL_PATH = "model/euphoscan_model.keras"
-
+# MODEL_PATH = "model/euphoscan_model.keras"
+MODEL_PATH = "model/euphoscan_render.keras"
 # ==================================
 # Render Debug Information
 # ==================================

@@ -628,6 +628,12 @@
 
 from flask import Flask, render_template, request
 import os
+
+# Must be BEFORE tensorflow import
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+import time
 import numpy as np
 from PIL import Image
 import tensorflow as tf
@@ -659,7 +665,6 @@ print("=" * 50)
 print("Loading model...")
 
 model = tf.saved_model.load(MODEL_PATH)
-
 infer = model.signatures["serving_default"]
 
 print("Model loaded successfully!")
@@ -718,20 +723,14 @@ def predict():
 
         try:
 
-            upload_folder = "uploads"
-            os.makedirs(upload_folder, exist_ok=True)
-
-            filepath = os.path.join(upload_folder, file.filename)
-            file.save(filepath)
-
             # ==========================
             # Image Preprocessing
             # ==========================
 
-            img = Image.open(filepath).convert("RGB")
+            img = Image.open(file).convert("RGB")
             img = img.resize((224, 224))
 
-            img_array = np.array(img).astype(np.float32)
+            img_array = np.array(img, dtype=np.float32)
             img_array = img_array / 255.0
             img_array = np.expand_dims(img_array, axis=0)
 
@@ -743,11 +742,24 @@ def predict():
             # Prediction
             # ==========================
 
+            print("START PREDICTION")
+
+            start_time = time.time()
+
             input_tensor = tf.convert_to_tensor(img_array)
 
             outputs = infer(input_tensor)
 
             prediction = list(outputs.values())[0].numpy()
+
+            end_time = time.time()
+
+            print("AFTER INFERENCE")
+            print(
+                "Inference Time:",
+                round(end_time - start_time, 2),
+                "seconds"
+            )
 
             predicted_class = int(np.argmax(prediction))
             confidence = float(np.max(prediction) * 100)
@@ -769,6 +781,11 @@ def predict():
 
             label = class_names[predicted_class]
 
+            # Cleanup memory
+            del img
+            del img_array
+            del input_tensor
+
             return render_template(
                 "predict.html",
                 label=label,
@@ -789,7 +806,8 @@ def debug_model_route():
     return {
         "model_exists": os.path.exists(MODEL_PATH),
         "tensorflow_version": tf.__version__,
-        "cwd": os.getcwd()
+        "cwd": os.getcwd(),
+        "signatures": list(model.signatures.keys())
     }
 
 

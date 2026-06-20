@@ -425,7 +425,9 @@ app = Flask(__name__)
 # ==================================
 
 # MODEL_PATH = "model/euphoscan_model.keras"
-MODEL_PATH = "model/euphoscan_render.keras"
+# MODEL_PATH = "model/euphoscan_render.keras"
+MODEL_PATH = "saved_model"
+model = tf.keras.models.load_model(MODEL_PATH)
 # ==================================
 # Render Debug Information
 # ==================================

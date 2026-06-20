@@ -809,7 +809,18 @@ def debug_model_route():
         "cwd": os.getcwd(),
         "signatures": list(model.signatures.keys())
     }
+@app.route("/test")
+def test():
+    return "Server Working" 
+    
+@app.route("/ram")
+def ram():
+    import psutil
 
+    process = psutil.Process()
+    return {
+        "ram_mb": process.memory_info().rss / 1024 / 1024
+    }
 
 # ==================================
 # Run Flask

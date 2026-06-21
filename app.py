@@ -822,6 +822,10 @@ def ram():
         "ram_mb": process.memory_info().rss / 1024 / 1024
     }
 
+@app.route("/health")
+def health():
+    return "OK"
+
 # ==================================
 # Run Flask
 # ==================================

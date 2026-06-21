@@ -673,13 +673,13 @@ print("=" * 50)
 # Load SavedModel
 # ==================================
 
-print("Loading model...")
+# print("Loading model...")
 
-model = tf.saved_model.load(MODEL_PATH)
-infer = model.signatures["serving_default"]
+# model = tf.saved_model.load(MODEL_PATH)
+# infer = model.signatures["serving_default"]
 
-print("Model loaded successfully!")
-print("Available Signatures:", list(model.signatures.keys()))
+# print("Model loaded successfully!")
+# print("Available Signatures:", list(model.signatures.keys()))
 
 # ==================================
 # Class Names
@@ -806,7 +806,7 @@ def predict():
             # Cleanup memory
             del img
             del img_array
-            del input_tensor
+            # del input_tensor
 
             return render_template(
                 "predict.html",
@@ -829,8 +829,9 @@ def debug_model_route():
         "model_exists": os.path.exists(MODEL_PATH),
         "tensorflow_version": tf.__version__,
         "cwd": os.getcwd(),
-        "signatures": list(model.signatures.keys())
+        "tflite_loaded": True
     }
+    
 @app.route("/test")
 def test():
     return "Server Working" 

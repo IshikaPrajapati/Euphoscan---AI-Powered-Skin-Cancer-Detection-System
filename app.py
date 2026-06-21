@@ -826,25 +826,28 @@ def ram():
 def health():
     return "OK"
 
-@app.route("/test-inference")
-def test_inference():
+# @app.route("/test-inference")
+# def test_inference():
 
-    import numpy as np
-    import tensorflow as tf
-    import time
+#     import numpy as np
+#     import tensorflow as tf
+#     import time
 
-    start = time.time()
+#     start = time.time()
 
-    dummy = np.zeros((1,224,224,3), dtype=np.float32)
+#     dummy = np.zeros((1,224,224,3), dtype=np.float32)
 
-    outputs = infer(tf.convert_to_tensor(dummy))
+#     outputs = infer(tf.convert_to_tensor(dummy))
 
-    end = time.time()
+#     end = time.time()
 
-    return {
-        "time": round(end-start,2),
-        "output_shape": str(list(outputs.values())[0].shape)
-    }
+#     return {
+#         "time": round(end-start,2),
+#         "output_shape": str(list(outputs.values())[0].shape)
+#     }
+@app.route("/ping")
+def ping():
+    return "pong"
 
 # ==================================
 # Run Flask

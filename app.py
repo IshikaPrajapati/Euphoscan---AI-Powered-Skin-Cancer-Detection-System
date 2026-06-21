@@ -645,8 +645,19 @@ app = Flask(__name__)
 # Model Path
 # ==================================
 
-MODEL_PATH = "saved_model"
+# MODEL_PATH = "saved_model"
+MODEL_PATH = "model/euphoscan_model.tflite"
 
+interpreter = tf.lite.Interpreter(
+    model_path=MODEL_PATH
+)
+
+interpreter.allocate_tensors()
+
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
+print("TFLite model loaded successfully!")
 # ==================================
 # Render Debug Information
 # ==================================
@@ -746,11 +757,22 @@ def predict():
 
             start_time = time.time()
 
-            input_tensor = tf.convert_to_tensor(img_array)
+            # input_tensor = tf.convert_to_tensor(img_array)
 
-            outputs = infer(input_tensor)
+            # outputs = infer(input_tensor)
 
-            prediction = list(outputs.values())[0].numpy()
+            # prediction = list(outputs.values())[0].numpy()
+
+            interpreter.set_tensor(
+                input_details[0]["index"],
+                img_array
+            )
+
+            interpreter.invoke()
+
+            prediction = interpreter.get_tensor(
+                output_details[0]["index"]
+            )
 
             end_time = time.time()
 
@@ -849,6 +871,51 @@ def health():
 def ping():
     return "pong"
 
+@app.route("/tflite-test")
+def tflite_test():
+
+    dummy = np.zeros(
+        (1,224,224,3),
+        dtype=np.float32
+    )
+
+    interpreter.set_tensor(
+        input_details[0]["index"],
+        dummy
+    )
+
+    interpreter.invoke()
+
+    output = interpreter.get_tensor(
+        output_details[0]["index"]
+    )
+
+    return {
+        "shape": str(output.shape),
+        "success": True
+    }
+
+
+start_time = time.time()
+
+interpreter.set_tensor(
+    input_details[0]["index"],
+    img_array
+)
+
+interpreter.invoke()
+
+prediction = interpreter.get_tensor(
+    output_details[0]["index"]
+)
+
+end_time = time.time()
+
+print(
+    "Inference Time:",
+    round(end_time - start_time, 2),
+    "seconds"
+)
 # ==================================
 # Run Flask
 # ==================================

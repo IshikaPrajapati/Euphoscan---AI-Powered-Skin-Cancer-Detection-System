@@ -626,6 +626,8 @@
 #???????????????????????????????????????
 #?????????????????????????????????????????????
 
+from xml.parsers.expat import model
+
 from flask import Flask, render_template, request
 import os
 
@@ -637,7 +639,7 @@ import time
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-import keras
+# import keras
 
 app = Flask(__name__)
 
@@ -664,7 +666,7 @@ print("TFLite model loaded successfully!")
 
 print("=" * 50)
 print("TensorFlow Version:", tf.__version__)
-print("Keras Version:", keras.__version__)
+# print("Keras Version:", keras.__version__)
 print("Current Directory:", os.getcwd())
 print("Model Exists:", os.path.exists(MODEL_PATH))
 print("=" * 50)
@@ -673,13 +675,13 @@ print("=" * 50)
 # Load SavedModel
 # ==================================
 
-print("Loading model...")
+# print("Loading model...")
 
-model = tf.saved_model.load(MODEL_PATH)
-infer = model.signatures["serving_default"]
+# model = tf.saved_model.load(MODEL_PATH)
+# infer = model.signatures["serving_default"]
 
-print("Model loaded successfully!")
-print("Available Signatures:", list(model.signatures.keys()))
+# print("Model loaded successfully!")
+# print("Available Signatures:", list(model.signatures.keys()))
 
 # ==================================
 # Class Names
@@ -738,24 +740,24 @@ def predict():
             # Image Preprocessing
             # ==========================
 
-            img = Image.open(file).convert("RGB")
-            img = img.resize((224, 224))
+                img = Image.open(file).convert("RGB")
+                img = img.resize((224, 224))
 
-            img_array = np.array(img, dtype=np.float32)
-            img_array = img_array / 255.0
-            img_array = np.expand_dims(img_array, axis=0)
+                img_array = np.array(img, dtype=np.float32)
+                img_array = img_array / 255.0
+                img_array = np.expand_dims(img_array, axis=0)
 
-            print("=" * 50)
-            print("IMAGE SHAPE:", img_array.shape)
-            print("=" * 50)
+                print("=" * 50)
+                print("IMAGE SHAPE:", img_array.shape)
+                print("=" * 50)
 
             # ==========================
             # Prediction
             # ==========================
 
-            print("START PREDICTION")
+                print("START PREDICTION")
 
-            start_time = time.time()
+                start_time = time.time()
 
             # input_tensor = tf.convert_to_tensor(img_array)
 
@@ -763,56 +765,82 @@ def predict():
 
             # prediction = list(outputs.values())[0].numpy()
 
-            
+            # interpreter.set_tensor(
+            #      input_details[0]["index"],
+            #     img_array
+            # )
 
-            end_time = time.time()
+            # interpreter.invoke()
 
-            print("AFTER INFERENCE")
-            print(
-                "Inference Time:",
-                round(end_time - start_time, 2),
-                "seconds"
-            )
-
-            predicted_class = int(np.argmax(prediction))
-            confidence = float(np.max(prediction) * 100)
-
-            confidence_list = []
-
-            for i in range(len(class_names)):
-                confidence_list.append(
-                    (
-                        class_names[i],
-                        float(prediction[0][i] * 100)
-                    )
+            # prediction = interpreter.get_tensor(
+            #         output_details[0]["index"]
+            # )
+                interpreter.set_tensor(
+                    input_details[0]["index"],
+                    img_array
                 )
 
-            confidence_list.sort(
-                key=lambda x: x[1],
-                reverse=True
-            )
+                interpreter.invoke()
 
-            label = class_names[predicted_class]
+                prediction = interpreter.get_tensor(
+                    output_details[0]["index"]
+                )
+                end_time = time.time()
 
-            # Cleanup memory
-            del img
-            del img_array
-            del input_tensor
+                print("AFTER INFERENCE")
+                print(
+                    "Inference Time:",
+                    round(end_time - start_time, 2),
+                    "seconds"
+                )
 
-            return render_template(
-                "predict.html",
-                label=label,
-                confidence=round(confidence, 2),
-                confidence_list=confidence_list
-            )
+                predicted_class = int(np.argmax(prediction))
+                confidence = float(np.max(prediction) * 100)
+
+                confidence_list = []
+
+                for i in range(len(class_names)):
+                    confidence_list.append(
+                        (
+                            class_names[i],
+                            float(prediction[0][i] * 100)
+                        )
+                    )
+
+                confidence_list.sort(
+                    key=lambda x: x[1],
+                    reverse=True
+                )
+
+                label = class_names[predicted_class]
+
+                # Cleanup memory
+                del img
+                del img_array
+                # del input_tensor
+
+                return render_template(
+                    "predict.html",
+                    label=label,
+                    confidence=round(confidence, 2),
+                    confidence_list=confidence_list
+                )
 
         except Exception as e:
-            print("PREDICTION ERROR:")
-            print(str(e))
-            return f"Error processing image: {str(e)}", 500
-
+                print("PREDICTION ERROR:")
+                print(str(e))
+                return f"Error processing image: {str(e)}", 500
     return render_template("predict.html")
 
+
+# @app.route("/debug-model")
+# def debug_model_route():
+#     return {
+#         "model_exists": os.path.exists(MODEL_PATH),
+#         "tensorflow_version": tf.__version__,
+#         "cwd": os.getcwd(),
+#         "signatures": list(model.signatures.keys())
+#     }
 
 @app.route("/debug-model")
 def debug_model_route():
@@ -820,8 +848,9 @@ def debug_model_route():
         "model_exists": os.path.exists(MODEL_PATH),
         "tensorflow_version": tf.__version__,
         "cwd": os.getcwd(),
-        "signatures": list(model.signatures.keys())
+        "tflite_loaded": True
     }
+
 @app.route("/test")
 def test():
     return "Server Working" 
@@ -861,6 +890,29 @@ def health():
 @app.route("/ping")
 def ping():
     return "pong"
+@app.route("/tflite-test")
+def tflite_test():
+
+    dummy = np.zeros(
+        (1, 224, 224, 3),
+        dtype=np.float32
+    )
+
+    interpreter.set_tensor(
+        input_details[0]["index"],
+        dummy
+    )
+
+    interpreter.invoke()
+
+    output = interpreter.get_tensor(
+        output_details[0]["index"]
+    )
+
+    return {
+        "shape": str(output.shape),
+        "success": True
+    }
 
 # ==================================
 # Run Flask
